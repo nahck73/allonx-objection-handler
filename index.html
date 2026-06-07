@@ -1,0 +1,482 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>All-on-X Objection Handler</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/dist/tabler-icons.min.css" />
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    background: #f5f4f0;
+    color: #1a1a18;
+    min-height: 100vh;
+    padding: 2rem 1rem;
+  }
+
+  .container {
+    max-width: 760px;
+    margin: 0 auto;
+  }
+
+  header {
+    margin-bottom: 2rem;
+  }
+
+  header h1 {
+    font-size: 22px;
+    font-weight: 600;
+    color: #1a1a18;
+    margin-bottom: 4px;
+  }
+
+  header p {
+    font-size: 14px;
+    color: #6b6b67;
+  }
+
+  .chip-group {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 1.25rem;
+  }
+
+  .chip {
+    font-size: 13px;
+    padding: 6px 14px;
+    border-radius: 20px;
+    border: 1px solid #d3d1c7;
+    background: #ffffff;
+    color: #1a1a18;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+
+  .chip:hover {
+    border-color: #888780;
+    background: #ffffff;
+  }
+
+  .chip.active {
+    background: #1a1a18;
+    color: #ffffff;
+    border-color: #1a1a18;
+  }
+
+  .custom-row {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 1.5rem;
+  }
+
+  .custom-row input {
+    flex: 1;
+    font-size: 14px;
+    padding: 10px 14px;
+    border-radius: 10px;
+    border: 1px solid #d3d1c7;
+    background: #ffffff;
+    color: #1a1a18;
+    outline: none;
+    transition: border-color 0.15s;
+  }
+
+  .custom-row input:focus {
+    border-color: #888780;
+  }
+
+  .custom-row button {
+    padding: 0 18px;
+    font-size: 13px;
+    font-weight: 500;
+    border-radius: 10px;
+    border: 1px solid #d3d1c7;
+    background: #ffffff;
+    color: #1a1a18;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: background 0.15s;
+  }
+
+  .custom-row button:hover { background: #f1efe8; }
+
+  .response-area { display: none; }
+
+  .divider {
+    border: none;
+    border-top: 1px solid #d3d1c7;
+    margin-bottom: 1.25rem;
+  }
+
+  .objection-label {
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: #888780;
+    margin-bottom: 4px;
+  }
+
+  .objection-text {
+    font-size: 14px;
+    color: #5f5e5a;
+    font-style: italic;
+    margin-bottom: 1.25rem;
+  }
+
+  .cards { display: grid; gap: 12px; }
+
+  .card {
+    background: #ffffff;
+    border: 1px solid #d3d1c7;
+    border-radius: 12px;
+    padding: 1rem 1.25rem;
+  }
+
+  .card-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 8px;
+  }
+
+  .option-num {
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+    color: #888780;
+  }
+
+  .approach-badge {
+    font-size: 12px;
+    font-weight: 500;
+    background: #f1efe8;
+    color: #5f5e5a;
+    padding: 2px 10px;
+    border-radius: 20px;
+  }
+
+  .script {
+    font-size: 14px;
+    color: #1a1a18;
+    line-height: 1.65;
+    margin-bottom: 10px;
+  }
+
+  .followup-row {
+    border-top: 1px solid #ebe9e2;
+    padding-top: 8px;
+    display: flex;
+    align-items: flex-start;
+    gap: 6px;
+  }
+
+  .followup-row i {
+    font-size: 13px;
+    color: #888780;
+    margin-top: 2px;
+    flex-shrink: 0;
+  }
+
+  .followup-text {
+    font-size: 13px;
+    color: #5f5e5a;
+    font-style: italic;
+  }
+
+  .back-btn {
+    margin-top: 1.25rem;
+    font-size: 13px;
+    padding: 6px 14px;
+    border-radius: 10px;
+    border: 1px solid #d3d1c7;
+    background: #f1efe8;
+    color: #1a1a18;
+    cursor: pointer;
+    transition: background 0.15s;
+  }
+
+  .back-btn:hover { background: #d3d1c7; }
+
+  footer {
+    margin-top: 3rem;
+    font-size: 12px;
+    color: #b4b2a9;
+    text-align: center;
+  }
+
+  @media (max-width: 480px) {
+    body { padding: 1.25rem 1rem; }
+    header h1 { font-size: 18px; }
+  }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <header>
+    <h1>All-on-X Objection Handler</h1>
+    <p>Select a patient objection to see 3 response strategies</p>
+  </header>
+
+  <div class="chip-group" id="chipGroup"></div>
+
+  <div class="custom-row">
+    <input id="customInput" type="text" placeholder="Type a custom objection and press Enter..." />
+    <button onclick="handleCustom()">Search</button>
+  </div>
+
+  <div class="response-area" id="responseArea">
+    <hr class="divider" />
+    <p class="objection-label">Patient said</p>
+    <p class="objection-text" id="objectionLabel"></p>
+    <div class="cards" id="cards"></div>
+    <button class="back-btn" onclick="closePanel()">
+      <i class="ti ti-arrow-left" style="font-size:13px; vertical-align:-1px; margin-right:4px;"></i>Back
+    </button>
+  </div>
+
+  <footer>Built for specialty implant practice use &mdash; Louisville, KY</footer>
+
+</div>
+
+<script>
+const data = [
+  {
+    label: "Too expensive",
+    objection: "It's too expensive / I can't afford it",
+    responses: [
+      {
+        approach: "Reframe as investment",
+        script: "I completely understand — it's a significant number. What I find helpful is looking at it over time. Most of our patients have spent thousands on dentures, relines, adhesives, and emergency fixes over the years. All-on-X typically pays for itself within 7–10 years and then keeps giving you back quality of life. Can I show you a quick comparison?",
+        followup: "How long have you been dealing with this situation?"
+      },
+      {
+        approach: "Financing options",
+        script: "The good news is very few patients pay out of pocket. We work with financing that gets most people into treatment for less than $200–$300 a month — less than a car payment. Would it help if we ran some numbers together right now so you can see what it actually looks like monthly?",
+        followup: "Would a monthly payment breakdown make this easier to think through?"
+      },
+      {
+        approach: "Anchor to daily cost",
+        script: "You're right, it's not cheap — and I respect that you're being thoughtful about it. But I also want to ask: what is it costing you right now? Not just financially, but in confidence, in what you eat, in how you show up socially? Sometimes the real cost is what you're already paying every day.",
+        followup: "What's been the hardest part of living with this for you personally?"
+      }
+    ]
+  },
+  {
+    label: "Need to think about it",
+    objection: "I need to think about it / talk to my spouse",
+    responses: [
+      {
+        approach: "Uncover the real question",
+        script: "Of course — this is a big decision and it should involve the people you trust. Can I ask: is there a specific part of this you're unsure about? I want to make sure you have everything you need to make the right call, not just a brochure.",
+        followup: "What's the one thing you'd want answered before moving forward?"
+      },
+      {
+        approach: "Invite the spouse in",
+        script: "Absolutely. In fact, a lot of our patients bring their spouse or partner to a second visit — it makes the decision much easier when everyone hears it together. Would it make sense to schedule a short follow-up where we can all sit down together?",
+        followup: "When would work for you both to come in?"
+      },
+      {
+        approach: "Surface the real hesitation",
+        script: "That makes total sense. Just between us — is it more the financial side, or is there something about the procedure itself that's giving you pause? I ask because I can address very different things depending on what's really on your mind.",
+        followup: "Is it more the cost, the surgery, or just wanting more time?"
+      }
+    ]
+  },
+  {
+    label: "Scared of surgery",
+    objection: "I'm scared of the surgery and the pain",
+    responses: [
+      {
+        approach: "Lead with IV sedation",
+        script: "That's one of the most common things I hear — and it's exactly why we do IV sedation for every full-arch case. You are completely asleep. You won't feel a thing, you won't remember a thing, and most patients are shocked by how easy the recovery is.",
+        followup: "Have you ever had IV sedation before for any procedure?"
+      },
+      {
+        approach: "Normalize, then reassure",
+        script: "Fear of surgery is completely normal — it would be strange if you weren't nervous. What I can tell you is that our patients who were most scared before surgery are almost always the ones who say afterward that it was nothing like they imagined. The anticipation is almost always worse than the reality.",
+        followup: "What specifically worries you most — the surgery itself, or the recovery?"
+      },
+      {
+        approach: "Highlight guided precision",
+        script: "I want to show you something — we use computer-guided navigation called X-Guide for every implant we place. The system directs instruments to the exact planned position in real time. This isn't freehand surgery. The precision reduces risk and recovery significantly compared to traditional approaches.",
+        followup: "Would it help to see what the guided navigation actually looks like?"
+      }
+    ]
+  },
+  {
+    label: "Cheaper elsewhere",
+    objection: "I saw much cheaper prices at another clinic or overseas",
+    responses: [
+      {
+        approach: "Acknowledge and differentiate",
+        script: "Those prices are real, and I'm not going to tell you they're fake. What I will tell you is what's usually different: the quality of components, whether the doctor doing surgery is also doing your prosthetics, whether there's an in-house lab, and what happens if something goes wrong three years later. Those are the questions worth asking.",
+        followup: "Do you know what implant system they use, or whether they have a lab on site?"
+      },
+      {
+        approach: "Focus on follow-up risk",
+        script: "Going overseas is an option some people choose. The challenge is that if you have a complication — infection, implant failure, a broken prosthetic — you're flying back or starting over with someone new here who didn't place them. We handle everything in-house, so there's never a gap in your care.",
+        followup: "Have you thought through what the follow-up situation would look like?"
+      },
+      {
+        approach: "Invite a direct comparison",
+        script: "Bring me the quote. I'm serious — let's sit down and look at it together. I'll tell you exactly what's included and what's not, and you can make an apples-to-apples comparison. I'm confident in what we offer, and I'd rather you make an informed choice than just pick the lowest number.",
+        followup: "What did they include in that price — temps, finals, all appointments?"
+      }
+    ]
+  },
+  {
+    label: "Dentist said get a denture",
+    objection: "My regular dentist said I should just get a partial or denture",
+    responses: [
+      {
+        approach: "Respect the dentist, expand the picture",
+        script: "Your dentist knows you well, and I respect that relationship. General dentists are excellent at many things — implant-supported full arches are a specialty procedure, though, and it's completely appropriate to get a specialist opinion. That's exactly what you're doing right now.",
+        followup: "Did your dentist give a specific reason why implants weren't recommended for you?"
+      },
+      {
+        approach: "Highlight what dentures can't do",
+        script: "Partial dentures and conventional dentures are real solutions — but they don't stop bone loss, and over time the fit changes, the bone shrinks, and the face changes shape. Implants are the only option that actually preserves the bone. It's worth understanding both options fully before deciding.",
+        followup: "How long has your dentist been suggesting that route?"
+      },
+      {
+        approach: "Offer the clinical picture",
+        script: "The best thing I can do is look at your bone structure, your bite, and your overall situation and give you my honest assessment. Sometimes people are told they're not candidates when they actually are — our guided technology and in-house capabilities handle cases other offices can't. Let me take a look.",
+        followup: "Have you had a CBCT scan done that we could review together?"
+      }
+    ]
+  },
+  {
+    label: "Is it worth it long term?",
+    objection: "How long will this last? Is it really worth it long term?",
+    responses: [
+      {
+        approach: "Lead with the data",
+        script: "The implant fixtures — the titanium roots — have 20–30 year track records in the literature with success rates above 95%. The prosthetic on top is the part that gets wear over time, but even that typically lasts 10–15 years before needing to be refreshed. We're talking about a solution built to last your lifetime.",
+        followup: "What's your biggest concern — the implants themselves, or the teeth on top?"
+      },
+      {
+        approach: "Compare to the alternative",
+        script: "Let's flip the question: how long does a denture last before it needs relining, remaking, or replacing? Usually 5–7 years — and the whole time it's sitting on shrinking bone. All-on-X actually stops the bone loss. In 10 years, you won't look like someone who lost their teeth.",
+        followup: "Have you seen what long-term denture wear does to the jawline over time?"
+      },
+      {
+        approach: "Tie it to their life goals",
+        script: "Here's the way I think about it — what do you want your life to look like at 70, or 80? Eating whatever you want, smiling in photos, not thinking about your teeth? That's what this gives you. It's not just a dental procedure. It's buying back a part of your quality of life.",
+        followup: "What's something you've avoided doing or eating because of your teeth?"
+      }
+    ]
+  },
+  {
+    label: "Too many appointments",
+    objection: "I don't have time for multiple appointments",
+    responses: [
+      {
+        approach: "Highlight the all-in-one model",
+        script: "That's actually one of the reasons patients choose us. Because we do everything in-house — surgery, prosthetics, and the lab — there's no back and forth between multiple offices. Your whole journey happens here, and we design the schedule around your life, not ours.",
+        followup: "What does your schedule look like — are certain days or blocks easier than others?"
+      },
+      {
+        approach: "Quantify the actual time",
+        script: "Let me put it in concrete terms: the major appointments are the consult, the surgery day, and the final delivery. We also have a few shorter check-ins in between. For most patients that's 5–6 visits over about 4–6 months. Compared to years of ongoing denture maintenance, it's actually a very contained timeline.",
+        followup: "Is it more the number of visits or the time off work that's the concern?"
+      },
+      {
+        approach: "Frame as one-time investment",
+        script: "You're investing a few months of your time once, and in return you get 20+ years of not thinking about your teeth. No emergency appointments, no adhesive, no relines. It's the most time-efficient dental decision you can make long-term.",
+        followup: "If we could cluster the key appointments to minimize disruption, would that make it easier?"
+      }
+    ]
+  },
+  {
+    label: "Poor bone / not a candidate",
+    objection: "My old dentist said my bone is too poor and I'm not a candidate",
+    responses: [
+      {
+        approach: "Challenge the old assessment",
+        script: "That may have been true at a general dental office — but what qualifies as 'not enough bone' has changed dramatically with guided implant technology. We use 3D imaging and computer-guided navigation to work with anatomy that used to be considered off-limits. I'd want to see your scan before accepting that conclusion.",
+        followup: "When was that assessment done, and do you have the CBCT scan from it?"
+      },
+      {
+        approach: "Explain advanced options",
+        script: "Even in cases of severe bone loss, we have options that bypass the need for traditional bone grafting — including zygomatic implants and angled placement techniques designed specifically for compromised anatomy. These aren't experimental; they're well-established in specialty implant practices.",
+        followup: "Were you told specifically which area had insufficient bone?"
+      },
+      {
+        approach: "Second-opinion framing",
+        script: "Getting a second opinion from a specialist is exactly the right move — and I'm glad you came in. General dentists are trained to identify problems, but treatment planning for complex full-arch cases is what we do every day. Let me look at what we're actually working with.",
+        followup: "Would you be open to getting a new scan so we can see where things stand today?"
+      }
+    ]
+  }
+];
+
+function renderChips() {
+  const g = document.getElementById('chipGroup');
+  data.forEach((item, i) => {
+    const b = document.createElement('button');
+    b.className = 'chip';
+    b.textContent = item.label;
+    b.onclick = () => {
+      document.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
+      b.classList.add('active');
+      showResponses(i);
+    };
+    g.appendChild(b);
+  });
+}
+
+function showResponses(index) {
+  const item = data[index];
+  document.getElementById('objectionLabel').textContent = '"' + item.objection + '"';
+  renderCards(item.responses);
+  const area = document.getElementById('responseArea');
+  area.style.display = 'block';
+  area.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+function renderCards(responses) {
+  const container = document.getElementById('cards');
+  container.innerHTML = '';
+  responses.forEach((r, i) => {
+    const card = document.createElement('div');
+    card.className = 'card';
+    card.innerHTML = `
+      <div class="card-header">
+        <span class="option-num">Option ${i + 1}</span>
+        <span class="approach-badge">${r.approach}</span>
+      </div>
+      <p class="script">"${r.script}"</p>
+      <div class="followup-row">
+        <i class="ti ti-arrow-right"></i>
+        <span class="followup-text">${r.followup}</span>
+      </div>`;
+    container.appendChild(card);
+  });
+}
+
+function handleCustom() {
+  const val = document.getElementById('customInput').value.trim();
+  if (!val) return;
+  alert('Custom objection lookup requires the AI-powered version. For now, try the closest matching button above, or contact your developer to add more objections to this file.');
+}
+
+function closePanel() {
+  document.getElementById('responseArea').style.display = 'none';
+  document.getElementById('customInput').value = '';
+  document.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
+}
+
+document.getElementById('customInput').addEventListener('keydown', e => {
+  if (e.key === 'Enter') handleCustom();
+});
+
+renderChips();
+</script>
+</body>
+</html>
